@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRLogix - Confirmación</title>
+    <style>
+        body {
+            background-color: #fff;
+            color: #071D49;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 80vh; /* toda la altura */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        /* Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .timeline .circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #071D49;
+            flex-shrink: 0;
+            position: relative;
+            font-size: 1rem;
+        }
+        .timeline .circle .label {
+            position: absolute;
+            top: 55px;
+            font-size: 0.75rem;
+            width: max-content;
+            color: #071D49;
+        }
+        .timeline .line {
+            flex: 1;
+            height: 4px;
+            background-color: #CCC;
+            margin: 0 5px;
+        }
+        /* Estados */
+        .timeline .circle.completed {
+            background-color: #C4D600;
+            color: white;
+        }
+        .timeline .circle.current {
+            background-color: #071D49;
+            color: white;
+        }
+        .timeline .circle.skipped {
+            background-color: yellow;
+            color: #071D49;
+        }
+        .timeline .circle.pending {
+            background-color: #ccc;
+            color: #071D49;
+        }
+        /* Texto de confirmación */
+        .mensaje {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+        }
+        .placa {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #0033FF;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <header>
+            <img src="/static/imagenes/ARG_logo_ver_color_no_background.png" alt="Logo Empresa">
+        </header>
+
+        <!-- Barra de progreso -->
+        <div class="timeline">
+            <div class="circle {% if estados.punto1 == 'completed' %}completed{% elif estados.punto1 == 'current' %}current{% elif estados.punto1 == 'skipped' %}skipped{% else %}pending{% endif %}">
+                {% if estados.punto1 == 'completed' %}✓{% else %}1{% endif %}
+                <span class="label">Patio</span>
+            </div>
+            <div class="line"></div>
+            <div class="circle {% if estados.punto2 == 'completed' %}completed{% elif estados.punto2 == 'current' %}current{% elif estados.punto2 == 'skipped' %}skipped{% else %}pending{% endif %}">
+                {% if estados.punto2 == 'completed' %}✓{% else %}2{% endif %}
+                <span class="label">Punto de Carga</span>
+            </div>
+            <div class="line"></div>
+            <div class="circle {% if estados.punto3 == 'completed' %}completed{% elif estados.punto3 == 'current' %}current{% elif estados.punto3 == 'skipped' %}skipped{% else %}pending{% endif %}">
+                {% if estados.punto3 == 'completed' %}✓{% else %}3{% endif %}
+                <span class="label">Enlonado</span>
+            </div>
+            <div class="line"></div>
+            <div class="circle {% if estados.punto4 == 'completed' %}completed{% elif estados.punto4 == 'current' %}current{% elif estados.punto4 == 'skipped' %}skipped{% else %}pending{% endif %}">
+                {% if estados.punto4 == 'completed' %}✓{% else %}4{% endif %}
+                <span class="label">Salida de Bodega</span>
+            </div>
+        </div>
+
+        <!-- Confirmación -->
+        <div class="mensaje">
+            ✅ Gracias. El {{ punto }} se ha escaneado correctamente.
+        </div>
+        <span class="placa">Placa: {{ placa }}</span>
+        <!--<span class="placa">Hora: {{ hora }}</span> -->
+    </div>
+</body>
+</html>
