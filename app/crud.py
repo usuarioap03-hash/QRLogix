@@ -1,4 +1,3 @@
-# app/crud.py
 # funciones de CRUD acceso a datos
 # (Crear=POST, Leer=GET, Actualizar=PUT, Eliminar=DELETE)
 
@@ -82,16 +81,3 @@ def create_escaneo(db: Session, sesion_id: int, punto: str):
     db.commit()
     db.refresh(escaneo)
     return escaneo
-
-# ------------------ ALERTAS ------------------
-def create_alerta(db: Session, sesion_id: int, punto_saltado: str):
-    """Crea un registro de alerta"""
-    alerta = models.Alerta(
-        sesion_id=sesion_id,
-        punto_saltado=punto_saltado,
-        fecha_hora=datetime.utcnow(),
-    )
-    db.add(alerta)
-    db.commit()
-    db.refresh(alerta)
-    return alerta
