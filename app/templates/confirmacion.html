@@ -10,7 +10,7 @@
             color: #071D49;
             font-family: Arial, sans-serif;
             margin: 0;
-            height: 80vh; /* toda la altura */
+            height: 80vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,13 +28,13 @@
             max-width: 150px;
             margin-bottom: 20px;
         }
-        /* Timeline */
         .timeline {
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
             margin: 20px 0;
+            overflow-x: auto;
         }
         .timeline .circle {
             width: 45px;
@@ -62,7 +62,6 @@
             background-color: #CCC;
             margin: 0 5px;
         }
-        /* Estados */
         .timeline .circle.completed {
             background-color: #C4D600;
             color: white;
@@ -72,14 +71,13 @@
             color: white;
         }
         .timeline .circle.skipped {
-            background-color: yellow;
-            color: #071D49;
+            background-color: red;
+            color: white;
         }
         .timeline .circle.pending {
             background-color: #ccc;
             color: #071D49;
         }
-        /* Texto de confirmación */
         .mensaje {
             font-size: 1.2rem;
             font-weight: bold;
@@ -95,40 +93,29 @@
 </head>
 <body>
     <div class="container">
-        <!-- Logo -->
         <header>
             <img src="/static/imagenes/ARG_logo_ver_color_no_background.png" alt="Logo Empresa">
         </header>
 
-        <!-- Barra de progreso -->
         <div class="timeline">
-            <div class="circle {% if estados.punto1 == 'completed' %}completed{% elif estados.punto1 == 'current' %}current{% elif estados.punto1 == 'skipped' %}skipped{% else %}pending{% endif %}">
-                {% if estados.punto1 == 'completed' %}✓{% else %}1{% endif %}
-                <span class="label">Patio</span>
-            </div>
-            <div class="line"></div>
-            <div class="circle {% if estados.punto2 == 'completed' %}completed{% elif estados.punto2 == 'current' %}current{% elif estados.punto2 == 'skipped' %}skipped{% else %}pending{% endif %}">
-                {% if estados.punto2 == 'completed' %}✓{% else %}2{% endif %}
-                <span class="label">Punto de Carga</span>
-            </div>
-            <div class="line"></div>
-            <div class="circle {% if estados.punto3 == 'completed' %}completed{% elif estados.punto3 == 'current' %}current{% elif estados.punto3 == 'skipped' %}skipped{% else %}pending{% endif %}">
-                {% if estados.punto3 == 'completed' %}✓{% else %}3{% endif %}
-                <span class="label">Enlonado</span>
-            </div>
-            <div class="line"></div>
-            <div class="circle {% if estados.punto4 == 'completed' %}completed{% elif estados.punto4 == 'current' %}current{% elif estados.punto4 == 'skipped' %}skipped{% else %}pending{% endif %}">
-                {% if estados.punto4 == 'completed' %}✓{% else %}4{% endif %}
-                <span class="label">Salida de Bodega</span>
-            </div>
+            {% for punto in puntos %}
+                <div class="circle {{ estados[punto] }}">
+                    {% if estados[punto] == 'completed' %}✓
+                    {% elif estados[punto] == 'skipped' %}✗
+                    {% else %}{{ loop.index }}{% endif %}
+                    <span class="label">{{ nombres[punto] }}</span>
+                </div>
+                {% if not loop.last %}
+                    <div class="line"></div>
+                {% endif %}
+            {% endfor %}
         </div>
 
-        <!-- Confirmación -->
         <div class="mensaje">
             ✅ Gracias. El {{ punto }} se ha escaneado correctamente.
         </div>
         <span class="placa">Placa: {{ placa }}</span>
-        <!--<span class="placa">Hora: {{ hora }}</span> -->
+        <span class="placa">Hora: {{ hora }}</span>
     </div>
 </body>
 </html>
