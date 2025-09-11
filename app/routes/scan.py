@@ -3,14 +3,25 @@ from fastapi import APIRouter, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from app.database import get_db
-from app import crud
 from datetime import datetime
+from app.database import get_db
+from app import crud, models
 
 router = APIRouter()
 
-# Templates: carpeta donde están los HTML
 templates = Jinja2Templates(directory="app/templates")
+
+# Lista dinámica de puntos
+PUNTOS = ["punto1", "punto2", "punto3", "punto4", "punto5", "punto6"]
+# Nombres más legibles para la UI
+NOMBRES = {
+    "punto1": "Patio",
+    "punto2": "Punto de Carga",
+    "punto3": "Punto 3",
+    "punto4": "Punto 4",
+    "punto5": "Punto 5",
+    "punto6": "Punto 6",
+}
 
 @router.get("/scan/{punto}", response_class=HTMLResponse)
 async def scan_qr(request: Request, punto: str, db: Session = Depends(get_db)):
@@ -18,20 +29,18 @@ async def scan_qr(request: Request, punto: str, db: Session = Depends(get_db)):
     sesion = crud.get_sesion_activa_por_ip(db, client_ip)
 
     if sesion:
-        # ✅ Guardar el escaneo automáticamente cuando hay sesión activa
         crud.create_escaneo(db, sesion.id, punto)
-
         return RedirectResponse(
             url=f"/confirmacion?punto={punto}&placa={sesion.camion.placa}",
             status_code=303
         )
 
-    # Si no hay sesión, mostrar formulario
     return templates.TemplateResponse("index.html", {
         "request": request,
         "punto": punto,
         "submitted": False
     })
+
 
 @router.post("/scan/{punto}", response_class=HTMLResponse)
 async def scan_qr_post(request: Request, punto: str, plate: str = Form(...), db: Session = Depends(get_db)):
@@ -45,7 +54,6 @@ async def scan_qr_post(request: Request, punto: str, plate: str = Form(...), db:
     if not sesion:
         sesion = crud.create_sesion(db, camion.id)
 
-    # ✅ Siempre guardar el escaneo al registrar placa
     crud.create_escaneo(db, sesion.id, punto)
 
     return RedirectResponse(
@@ -53,30 +61,38 @@ async def scan_qr_post(request: Request, punto: str, plate: str = Form(...), db:
         status_code=303
     )
 
+
 @router.get("/confirmacion", response_class=HTMLResponse)
-async def confirmacion(request: Request, punto: str, placa: str):
-    # Lista ordenada de los puntos
-    orden = ["punto1", "punto2", "punto3", "punto4"]
+async def confirmacion(request: Request, punto: str, placa: str, db: Session = Depends(get_db)):
+    # Buscar la sesión del camión
+    camion = crud.get_camion_by_placa(db, placa)
+    sesion = crud.get_sesion_activa_por_ip(db, request.client.host)
 
-    # Calcular hora actual
-    hora = datetime.now().strftime("%I:%M:%S %p")
+    # Escaneos de esa sesión
+    escaneados = []
+    if sesion:
+        escaneados = [e.punto for e in db.query(models.Escaneo).filter(models.Escaneo.sesion_id == sesion.id).all()]
 
-    # Estados dinámicos de los puntos
     estados = {}
-    encontrado = False
-    for p in orden:
-        if not encontrado:
+    ultimo_idx = -1
+    for idx, p in enumerate(PUNTOS):
+        if p in escaneados:
             estados[p] = "completed"
-        if p == punto:
-            estados[p] = "completed"
-            encontrado = True
-        elif encontrado:
-            estados[p] = "pending"
+            ultimo_idx = idx
+        else:
+            if idx < ultimo_idx:  # Saltado
+                estados[p] = "skipped"
+            elif idx == ultimo_idx + 1:  # El siguiente esperado
+                estados[p] = "current"
+            else:
+                estados[p] = "pending"
 
     return templates.TemplateResponse("confirmacion.html", {
         "request": request,
         "punto": punto,
         "placa": placa,
-        "hora": hora,
-        "estados": estados
+        "hora": datetime.now().strftime("%H:%M:%S"),
+        "estados": estados,
+        "puntos": PUNTOS,
+        "nombres": NOMBRES
     })
