@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW vista_camiones_resumen AS
+CREATE OR REPLACE VIEW vista_resumen AS
 SELECT
     c.id AS id_camion,
     DATE(e.fecha_hora) AS fecha,
