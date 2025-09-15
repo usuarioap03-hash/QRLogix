@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Registrar dispositivo</title>
+  <style>
+    
+    body{
+        font-family:Arial, sans-serif; 
+        background:#f7f7f7; 
+        min-height:100vh; 
+        margin:0; display:flex; 
+        align-items:center; 
+        justify-content:center
+        }
+    .card{
+        background:#fff; 
+        padding:28px 24px; 
+        border-radius:12px; 
+        box-shadow:0 6px 24px rgba(0,0,0,.08); 
+        width:92%; 
+        max-width:420px; 
+        text-align:center
+        }
+    h1{margin:0 0 10px}
+    p{color:#555}
+    input, button{font-size:1rem}
+    input{width:100%; padding:12px 14px; border:1px solid #ccc; border-radius:10px}
+    button{margin-top:12px; padding:12px 14px; border:none; border-radius:10px; background:#071D49; color:#fff; cursor:pointer}
+    button:active{transform:translateY(1px)}
+
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>Registrar dispositivo</h1>
+    <p>Ingresa tu placa autorizada para vincular este dispositivo.</p>
+    <form method="post" action="/registro_dispositivo">
+      <input type="text" name="placa" placeholder="Ej: ABC123" required/>
+      <button type="submit">Registrar</button>
+    </form>
+
+  </div>
+
+</body>
+</html>
